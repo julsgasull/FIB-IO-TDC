@@ -1,0 +1,10 @@
+reset;
+
+model cpm.mod;
+data cpm_sample.dat;
+
+option solver './gurobi';
+
+solve;
+
+display t;
