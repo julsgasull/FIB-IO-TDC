@@ -11,6 +11,7 @@ param tau_min {(i,j) in arcs} >= 0; # duració mínima de la tasca
 param cost {(i,j) in arcs} >= 0;    # cost de cada tasca
 param alpha;                        # coeficient paretto (=1: minimitzar temps, =0: minimitzar cost)
 param ccptt;                        # coeficient de cost proporcional del temps total
+/*param pressupost_inicial;           # pressupost que té el projecte sense demanar cap prèstec*/
 
 # vars
 var t {j in nodes} default 0;       # instant en que acabsa la tasca [i,j]
@@ -18,8 +19,18 @@ var tau {(i,j) in arcs};            # durada de la tasca [i,j]
 
 # funció i restriccions
 minimize time:
-	alpha*       ( t[dest] ) +
-  (1-alpha)*   ( sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j] - tau[i,j]) + ccptt*t[dest])
+	alpha*        ( # temps total
+                  t[dest]
+                )
+  +
+  (1-alpha)*    ( # cost total
+                  ( sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j] - tau[i,j]) ) # cost segons diferència entre tau_max i tau
+                  +
+                  ( ccptt*t[dest] ) # cost proporcional al temps total
+                  /*+
+                  (1-alfa2)*prèstec # cost en cas de haver de demanar prèstec
+                  */
+                )
 ;
 
 subject to tasca_entre_nodes {(i,j) in arcs}: t[i] + tau[i,j] - t[j] <= 0;
