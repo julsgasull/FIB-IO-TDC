@@ -2,11 +2,11 @@ set nodes := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20;
 
 param orig := 1 ;
 param dest := 20 ;
-param coeficient_paretto := 0.0; 		# pot variar
+param coeficient_paretto := 0.5; 		# pot variar
 param ccptt := 1;   								# pot variar
-param pressupost := 390; 						# pot variar
+param pressupost := 50; 						# pot variar
 param tipus_interes := 0.654; 			# pot variar
-
+#param t_max := 500;									# pot variar
 param:
 	arcs:
             tau_max   tau_min   cost := # cost pot variar

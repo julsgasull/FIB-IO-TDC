@@ -13,6 +13,7 @@ param coeficient_paretto;           # coeficient paretto (=1: minimitzar temps, 
 param ccptt;                        # coeficient de cost proporcional del temps total
 param pressupost;           				# pressupost que té el projecte sense demanar cap prèstec
 param tipus_interes;
+#param t_max;
 var prestec_demanat binary;
 
 param cost_total default 0;
@@ -35,10 +36,10 @@ minimize time:
 		ccptt * t[dest] +																				# cost proporcional al temps total
     prestec_demanat *																				# cost si s'ha de demanar prestec
 		(
-			tipus_interes*
+			tipus_interes*																				# tipus_interes * valor_pressupost_demamat
 			(
 				sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j]) +
-				ccptt*t[dest]
+				ccptt*t[dest]	#- pressupost
 			)
 		)
 	)
@@ -46,16 +47,17 @@ minimize time:
 
 
 subject to tasca_entre_nodes {(i,j) in arcs}: t[i] + tau[i,j] - t[j] <= 0;
-subject to t_positiu {i in nodes}: t[i] >= 0;
-subject to fita_inferior {(i,j) in arcs}: tau_min[i,j] <= tau[i,j];
-subject to fita_superior {(i,j) in arcs}: tau[i,j] <= tau_max[i,j];
+subject to t_fita_inferior {i in nodes}: t[i] >= 0;
+#subject to t_fita_superior {i in nodes}: t[i] <= t_max;
+subject to tau_fita_inferior {(i,j) in arcs}: tau_min[i,j] <= tau[i,j];
+subject to tau_fita_superior {(i,j) in arcs}: tau[i,j] <= tau_max[i,j];
 
-subject to interessos: # només es demana prèstec si es sobrepassa el pressupost
-	prestec_demanat =
+subject to interessos: # només es demana prèstec si se sobrepassa el pressupost
+	prestec_demanat >=
 	(
 		if
 		(
-			sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j]) + ccptt*t[dest] - pressupost > 0
+			(sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j])) + ccptt*t[dest] - pressupost > 0
 		) then 1
 		else 0
 	)

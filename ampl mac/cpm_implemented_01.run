@@ -3,7 +3,7 @@ reset;
 model cpm_implemented.mod;
 data cpm_implemented_01.dat;
 
-option solver './cplex';
+option solver './knitro.exe';
 
 solve;
 
