@@ -1,0 +1,22 @@
+reset;
+
+model cpm_implemented.mod;
+data cpm_implemented_09.dat;
+
+option solver './knitro';
+
+solve;
+
+display t;
+display tau;
+
+let cost_total :=
+  sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j]) +
+  ccptt*t[dest] +
+  prestec_demanat*
+  (
+    sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j]) +
+    ccptt*t[dest]
+  )
+;
+display cost_total;
