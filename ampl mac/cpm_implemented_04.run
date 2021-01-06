@@ -1,0 +1,26 @@
+reset;
+
+model cpm_implemented.mod;
+data cpm_implemented_04.dat;
+
+option solver './knitro.exe';
+
+solve;
+
+display t;
+display tau;
+
+let cost_total :=
+  (sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j])) +
+  ccptt*t[dest] +
+  prestec_demanat*
+  (
+    (tipus_interes/100)*																				# tipus_interes * valor_pressupost_demamat
+    (
+      (sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j])) +
+      ccptt*t[dest]	- pressupost
+    )
+  )
+;
+display cost_paretto;
+display t[dest];
