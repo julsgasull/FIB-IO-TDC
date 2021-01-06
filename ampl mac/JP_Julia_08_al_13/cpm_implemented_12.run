@@ -1,7 +1,7 @@
 reset;
 
 model cpm_implemented.mod;
-data cpm_implemented_13.dat;
+data cpm_implemented_12.dat;
 
 option solver './knitro';
 
@@ -19,4 +19,5 @@ let cost_total :=
     ccptt*t[dest]
   )
 ;
-display cost_total;
+display cost_paretto;
+display t[dest];
