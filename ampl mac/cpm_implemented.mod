@@ -12,9 +12,8 @@ param cost {(i,j) in arcs} >= 0;    # cost de cada tasca
 param coeficient_paretto;           # coeficient paretto (=1: minimitzar temps, =0: minimitzar cost)
 param ccptt;                        # coeficient de cost proporcional del temps total
 param pressupost;           				# pressupost que té el projecte sense demanar cap prèstec
-param tipus_interes;
-#param t_max;
-var prestec_demanat binary;
+param tipus_interes;								# factor que multiplica el cost-pressupost en cas prèstec
+var prestec_demanat binary;					# (=1 s'ha de demanar prestec, =0 otherwise)
 
 param cost_total default 0;
 
@@ -27,18 +26,19 @@ var tau {(i,j) in arcs} >= 0;            # durada de la tasca [i,j]
 minimize cost_paretto:
 	coeficient_paretto*t[dest] +
 	(1.0-coeficient_paretto)*
-		( # cost total
-			(sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j])) + 	# cost segons diferència entre tau_max i tau
-			ccptt * t[dest] +																				# cost proporcional al temps total
-	    prestec_demanat *																				# cost si s'ha de demanar prestec
+	( # cost total
+		(sum{(i,j) in arcs} cost[i,j]*(tau_max[i,j]-tau[i,j])) + 	# cost segons diferència entre tau_max i tau
+		ccptt * t[dest] +																					# cost proporcional al temps total
+    prestec_demanat *																					# cost si s'ha de demanar prestec
+		(
+			(tipus_interes/100)*																		# tipus_interes * valor_pressupost_demamat
 			(
-				(tipus_interes/100)*																				# tipus_interes * valor_pressupost_demamat
-				(
-					(sum{(i,j) in arcs} (cost[i,j]*(tau_max[i,j]-tau[i,j]))) +
-					ccptt*t[dest]	- pressupost
-				)
+				(sum{(i,j) in arcs} (cost[i,j]*(tau_max[i,j]-tau[i,j]))) +
+				ccptt*t[dest]	- pressupost
 			)
-		);
+		)
+	)
+;
 
 
 subject to tasca_entre_nodes {(i,j) in arcs}: t[i] + tau[i,j] - t[j] <= 0;
